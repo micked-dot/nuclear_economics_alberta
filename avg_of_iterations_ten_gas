@@ -4,7 +4,6 @@ import numpy as np
 
 from original import simulate_single_scenario
 
-
 def run_iterations(iterations: int, seed: int | None = None) -> dict:
     rng = np.random.default_rng(seed)
     ccgt_npvs = []
@@ -42,7 +41,11 @@ def main() -> None:
     parser.add_argument('--seed', type=int, default=None, help='Optional seed for repeatable results.')
     args = parser.parse_args()
 
-    results = run_iterations(args.iterations, args.seed)
+    fixed_gas_prices = np.linspace(1, 10, 10)
+    tier_benchmarks = [0.37, 0]
+    for benchmark in tier_benchmarks:
+        for price in fixed_gas_prices:
+            results = run_iterations(args.iterations, args.seed)
     print_aggregated_results(results)
 
 
