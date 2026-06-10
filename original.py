@@ -7,15 +7,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 plt.rcParams['font.family'] = 'Times New Roman'
-plt.rcParams['font.size'] = '16'
+plt.rcParams['font.size'] = '11'
 
 HOURS_PER_DAY = 24
 DAYS_PER_YEAR = 365
 GAS_OPEX = 5
-TIER_BENCHMARK = 0.00 #TODO change
+TIER_BENCHMARK = 0.37 #TODO change
 URANIUM_PRICE = 0.94  # CAD/GJ
 URANIUM_CONVERSION = 10.8
-TIME = 10 * DAYS_PER_YEAR
+TIME = 40 * DAYS_PER_YEAR
 ANNUAL_DISCOUNT_RATE = 0.05
 DISCOUNT_RATE = (1 + ANNUAL_DISCOUNT_RATE) ** (1 / DAYS_PER_YEAR) - 1
 
@@ -206,52 +206,58 @@ def print_summary(metrics: Dict[str, np.ndarray | float]) -> None:
 def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
     fig = plt.figure()
     gs = gridspec.GridSpec(3, 1, height_ratios=[3, 1, 1], hspace=0.1)
-    time = np.linspace(0, TIME, TIME)
+    time_years = np.arange(TIME) / DAYS_PER_YEAR
 
     ax1 = fig.add_subplot(gs[0])
-    ax1.plot(time, metrics['gas_moving_avg'], color='red', label='CCGT')
-    ax1.plot(time, metrics['nuc_moving_avg'], color='green', label='Nuclear')
+    ax1.plot(time_years, metrics['gas_moving_avg'], color='red', label='CCGT', linewidth=1)
+    ax1.plot(time_years, metrics['nuc_moving_avg'], color='green', label='Nuclear', linewidth=1)
     ax1.set_ylabel('Daily Cashflows')
     ax1.label_outer()
     ax1.legend(loc='upper right')
 
     ax3 = fig.add_subplot(gs[1], sharex=ax1)
-    ax3.plot(time, metrics['electricity_moving_avg'], color='blue')
+    ax3.plot(time_years, metrics['electricity_moving_avg'], color='blue', linewidth=1)
     ax3.set_ylabel('Electricity')
     ax3.label_outer()
 
     ax4 = fig.add_subplot(gs[2], sharex=ax1)
-    ax4.plot(time, metrics['gas_prices_moving_avg'], color='black')
+    ax4.plot(time_years, metrics['gas_prices_moving_avg'], color='black', linewidth=1)
     ax4.set_ylabel('Natural Gas')
-    ax4.set_xlabel('Time (Days)')
+    ax4.set_xlabel('Time (Years)')
+    fig.align_ylabels([ax1, ax3, ax4])
 
     fig2 = plt.figure()
     gs2 = gridspec.GridSpec(5, 1, height_ratios=[3, 3, 1, 1, 1], hspace=0.1)
 
+    cashflow_per_electricity = metrics['gas_moving_avg'] / metrics['electricity_moving_avg'] / 1e5
+    nuc_cashflow_per_electricity = metrics['nuc_moving_avg'] / metrics['electricity_moving_avg'] / 1e5
+
     ax5 = fig2.add_subplot(gs2[0])
-    ax5.plot(time, metrics['nuc_moving_avg'] / metrics['gas_prices_moving_avg'], color='green', label='Nuclear')
-    ax5.plot(time, metrics['gas_moving_avg'] / metrics['gas_prices_moving_avg'], color='red', label='CCGT')
+    ax5.plot(time_years, metrics['nuc_moving_avg'] / metrics['gas_prices_moving_avg'], color='green', label='Nuclear', linewidth=1)
+    ax5.plot(time_years, metrics['gas_moving_avg'] / metrics['gas_prices_moving_avg'], color='red', label='CCGT', linewidth=1)
     ax5.set_ylabel('Cashflow / Gas')
     ax5.label_outer()
     ax5.legend(loc='upper right')
 
     ax6 = fig2.add_subplot(gs2[1])
-    ax6.plot(time, metrics['nuc_moving_avg'] / metrics['electricity_moving_avg'], color='green', label='Nuclear')
-    ax6.plot(time, metrics['gas_moving_avg'] / metrics['electricity_moving_avg'], color='red', label='CCGT')
-    ax6.set_ylabel('Cashflow / Electricity')
+    ax6.plot(time_years, nuc_cashflow_per_electricity, color='green', label='Nuclear', linewidth=1)
+    ax6.plot(time_years, cashflow_per_electricity, color='red', label='CCGT', linewidth=1)
+    ax6.set_ylabel('Cashflow / Electricity (x1e5)')
     ax6.label_outer()
 
     ax7 = fig2.add_subplot(gs2[2])
-    ax7.plot(time, metrics['electricity_moving_avg'] / metrics['gas_prices_moving_avg'], color='purple')
+    ax7.plot(time_years, metrics['electricity_moving_avg'] / metrics['gas_prices_moving_avg'], color='purple', linewidth=1)
     ax7.set_ylabel('Electricity / Gas')
     ax7.label_outer()
 
     ax8 = fig2.add_subplot(gs2[3])
-    ax8.plot(time, metrics['electricity_moving_avg'], color='blue')
+    ax8.plot(time_years, metrics['electricity_moving_avg'], color='blue', linewidth=1)
     ax8.label_outer()
 
     ax9 = fig2.add_subplot(gs2[4])
-    ax9.plot(time, metrics['gas_prices_moving_avg'], color='black')
+    ax9.plot(time_years, metrics['gas_prices_moving_avg'], color='black', linewidth=1)
+    ax9.set_xlabel('Time (Years)')
+    fig2.align_ylabels([ax5, ax6, ax7, ax8, ax9])
 
     plt.show()
 

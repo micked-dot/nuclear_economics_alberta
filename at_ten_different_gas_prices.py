@@ -173,12 +173,12 @@ for i, benchmark in enumerate(tier_benchmarks):
     ax1.plot(fixed_gas_prices, nuc_npvs_by_benchmark[i], color='green', alpha=alpha, label=f'Nuclear (benchmark={benchmark})')
     ax2.plot(fixed_gas_prices, avg_elec_prices_by_benchmark[i], color='blue', alpha=alpha, label=f'Electricity Price (benchmark={benchmark})')
 
-ax1.set_ylabel('NPV')
-ax1.set_xlabel('Gas Price')
+ax1.set_ylabel('NPV (CAD)')
+ax1.set_xlabel('Gas Price (CAD/GJ)')
 ax1.legend(loc='lower right')
 ax1.label_outer()
 
-ax2.set_ylabel('Electricity Price')
-ax2.set_xlabel('Gas Price')
+ax2.set_ylabel('Electricity Price (CAD/GJ)')
+ax2.set_xlabel('Gas Price (CAD/GJ)')
 
 plt.show()
