@@ -38,8 +38,8 @@ def print_aggregated_results(results: dict) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='Run aggregate scenario results across many random iterations.')
-    parser.add_argument('--iterations', type=int, default=100, help='Number of stochastic model iterations.')
-    parser.add_argument('--seed', type=int, default=None, help='Optional seed for repeatable results.')
+    parser.add_argument('-i', '--iterations', type=int, default=100, help='Number of stochastic model iterations.')
+    parser.add_argument('-s','--seed', type=int, default=None, help='Optional seed for repeatable results.')
     args = parser.parse_args()
 
     results = run_iterations(args.iterations, args.seed)
