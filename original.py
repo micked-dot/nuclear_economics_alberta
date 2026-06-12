@@ -12,7 +12,7 @@ plt.rcParams['font.size'] = '7.5'
 HOURS_PER_DAY = 24
 DAYS_PER_YEAR = 365
 GAS_OPEX = 5
-TIER_BENCHMARK = 0.37 #TODO change
+TIER_BENCHMARK = 0.00 #TODO change
 URANIUM_PRICE = 0.94  # CAD/GJ
 URANIUM_CONVERSION = 10.8
 TIME = 40 * DAYS_PER_YEAR
@@ -37,8 +37,8 @@ WINDOW = 180
 
 @dataclass
 class GasPriceConfig:
-    starting_price: float = 1.5 * 1 #TODO change
-    average_price: float = 1.5 * 1 #TODO change and save
+    starting_price: float = 1.5 * 5 #TODO change
+    average_price: float = 1.5 * 5 #TODO change and save
     std: float = 0.5
     mean_reversion: float = 0.1
 
@@ -156,7 +156,10 @@ def nuc_cashflow(electricity_price_value: float, discount: float) -> float:
 def moving_average(values: np.ndarray, window: int = WINDOW) -> np.ndarray:
     if window <= 1:
         return values.copy()
-    return np.convolve(values, np.ones(window) / window, mode='same')
+    weights = np.ones(window)
+    weighted_sum = np.convolve(values, weights, mode='same')
+    sample_count = np.convolve(np.ones_like(values), weights, mode='same')
+    return weighted_sum / sample_count
 
 
 def simulate_single_scenario(
@@ -211,7 +214,7 @@ def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
     ax1 = fig.add_subplot(gs[0])
     ax1.plot(time_years, metrics['gas_moving_avg'], color='red', label='CCGT', linewidth=1)
     ax1.plot(time_years, metrics['nuc_moving_avg'], color='green', label='Nuclear', linewidth=1)
-    ax1.set_ylabel('Daily Cashflow ($CAD)')
+    ax1.set_ylabel('Daily Cash Flow (millions)')
     ax1.label_outer()
     ax1.legend(loc='upper right')
 
@@ -237,14 +240,14 @@ def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
     ax5 = fig2.add_subplot(gs2[0])
     ax5.plot(time_years, metrics['nuc_moving_avg'] / metrics['gas_prices_moving_avg'], color='green', label='Nuclear', linewidth=1)
     ax5.plot(time_years, metrics['gas_moving_avg'] / metrics['gas_prices_moving_avg'], color='red', label='CCGT', linewidth=1)
-    ax5.set_ylabel('Cashflow / Gas (GJ/day)')
+    ax5.set_ylabel('Cash Flow / Gas (GJ/day)')
     ax5.label_outer()
     ax5.legend(loc='upper right')
 
     ax6 = fig2.add_subplot(gs2[1])
     ax6.plot(time_years, nuc_cashflow_per_electricity, color='green', label='Nuclear', linewidth=1)
     ax6.plot(time_years, cashflow_per_electricity, color='red', label='CCGT', linewidth=1)
-    ax6.set_ylabel('Cashflow / Electricity (MWh/day)')
+    ax6.set_ylabel('Cash Flow / Electricity (MWh/day)')
     ax6.label_outer()
 
     ax7 = fig2.add_subplot(gs2[2])
