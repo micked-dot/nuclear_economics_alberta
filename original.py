@@ -12,7 +12,7 @@ plt.rcParams['font.size'] = '7.5'
 HOURS_PER_DAY = 24
 DAYS_PER_YEAR = 365
 GAS_OPEX = 5
-TIER_BENCHMARK = 0.00 #TODO change
+TIER_BENCHMARK = 0.37 #TODO change
 URANIUM_PRICE = 0.94  # CAD/GJ
 URANIUM_CONVERSION = 10.8
 TIME = 40 * DAYS_PER_YEAR
@@ -37,8 +37,8 @@ WINDOW = 180
 
 @dataclass
 class GasPriceConfig:
-    starting_price: float = 1.5 * 5 #TODO change
-    average_price: float = 1.5 * 5 #TODO change and save
+    starting_price: float = 1.5 * 1 #TODO change
+    average_price: float = 1.5 * 1 #TODO change and save
     std: float = 0.5
     mean_reversion: float = 0.1
 
@@ -214,7 +214,7 @@ def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
     ax1 = fig.add_subplot(gs[0])
     ax1.plot(time_years, metrics['gas_moving_avg'], color='red', label='CCGT', linewidth=1)
     ax1.plot(time_years, metrics['nuc_moving_avg'], color='green', label='Nuclear', linewidth=1)
-    ax1.set_ylabel('Daily Cash Flow (millions)')
+    ax1.set_ylabel('Daily Cash Flow (mil)')
     ax1.label_outer()
     ax1.legend(loc='upper right')
 
@@ -226,10 +226,10 @@ def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
     ax4 = fig.add_subplot(gs[2], sharex=ax1)
     ax4.plot(time_years, metrics['gas_prices_moving_avg'], color='black', linewidth=1)
     ax4.set_ylabel('Nat. Gas ($/GJ)')
-    ax4.set_xlabel('Time (Years)')
+    ax4.set_xlabel('Years')
     fig.align_ylabels([ax1, ax3, ax4])
 
-    plt.savefig("fig2.svg", dpi=1200, bbox_inches="tight")
+    plt.savefig("fig2.png", dpi=1200, bbox_inches="tight")
 
     fig2 = plt.figure(figsize=(5,8))
     gs2 = gridspec.GridSpec(5, 1, height_ratios=[3, 3, 1, 1, 1], hspace=0.1)
@@ -261,10 +261,10 @@ def plot_scenario(metrics: Dict[str, np.ndarray | float]) -> None:
 
     ax9 = fig2.add_subplot(gs2[4])
     ax9.plot(time_years, metrics['gas_prices_moving_avg'], color='black', linewidth=1)
-    ax9.set_xlabel('Time (Years)')
+    ax9.set_xlabel('Years')
     fig2.align_ylabels([ax5, ax6, ax7, ax8, ax9])
 
-    plt.savefig("fig3.svg", dpi=1200, bbox_inches="tight")
+    plt.savefig("fig3.png", dpi=1200, bbox_inches="tight")
 
 
 def main() -> None:
